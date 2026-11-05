@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Configuración de Respawn")]
+    [SerializeField] private LayerMask capaSuelo;
+    private Transform spawnPoint;
     [Header("Configuración de Movimiento")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float rotationSpeed = 12f;
@@ -89,5 +92,25 @@ public class PlayerController : MonoBehaviour
         jumpForce = originalJumpForce * multiplier;
         yield return new WaitForSeconds(duration);
         jumpForce = originalJumpForce;
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (((1 << collision.gameObject.layer) & capaSuelo) != 0)
+        {
+            Respawn();
+        }
+    }
+    public void Respawn()
+    {
+        if (spawnPoint != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.position = spawnPoint.position;
+        }
+    }
+    public void SetPosition(Transform newSpaunPosition)
+    {
+        spawnPoint = newSpaunPosition;
     }
 }
