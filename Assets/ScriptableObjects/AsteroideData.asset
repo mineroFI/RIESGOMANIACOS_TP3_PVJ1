@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9b436db151cd24da8368a54235eed2, type: 3}
   m_Name: AsteroideData
   m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
-  entityName: Asteroide / Dron
+  entityName: Asteroide
   targetTag: Player
   entityType: 0
   initialState: 1

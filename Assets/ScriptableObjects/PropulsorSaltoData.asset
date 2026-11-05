@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9b436db151cd24da8368a54235eed2, type: 3}
   m_Name: PropulsorSaltoData
   m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
-  entityName: Asteroide / Dron
+  entityName: Propulsor Salto
   targetTag: Player
-  entityType: 0
+  entityType: 2
   initialState: 1
   maxHealth: 1
   damage: 1
