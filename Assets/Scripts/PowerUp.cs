@@ -3,13 +3,16 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
-    [Header("Configuración del Efecto")]
+    [Header("Datos Modulares")]
+    [SerializeField] private EntityDataSO itemData;
+
+    [Header("Configuración del Efecto (backup)")]
     [SerializeField] private float jumpMultiplier = 1.2f;
     [SerializeField] private float duration = 6f;
     [SerializeField] private float rotationSpeed = 90f;
 
-    [Header("Límite de Usos")]
-    [SerializeField] private int maxPickups = 4; // 1 uso inicial + 3 reapariciones 
+    [Header("Límite de Usos (backup)")]
+    [SerializeField] private int maxPickups = 4;
 
     private int currentPickups = 0;
     private Renderer itemRenderer;
@@ -24,10 +27,10 @@ public class PowerUp : MonoBehaviour
 
     void Update()
     {
-        // Solo rota cuando está visible en la escena
         if (isAvailable)
         {
-            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
+            float currentRotSpeed = itemData != null ? itemData.rotationSpeed : rotationSpeed;
+            transform.Rotate(Vector3.up, currentRotSpeed * Time.deltaTime, Space.World);
         }
     }
 
@@ -35,43 +38,47 @@ public class PowerUp : MonoBehaviour
     {
         if (!isAvailable) return;
 
+        string targetTag = itemData != null ? itemData.targetTag : "Player";
         PlayerController player = other.GetComponentInParent<PlayerController>();
 
-        if (player != null || other.CompareTag("Player"))
+        if (player != null || other.CompareTag(targetTag))
         {
+            float mult = itemData != null ? itemData.jumpMultiplier : jumpMultiplier;
+            float dur = itemData != null ? itemData.effectDuration : duration;
+            int maxUses = itemData != null ? itemData.maxPickups : maxPickups;
+            string itemName = itemData != null ? itemData.entityName : "Power-Up";
+
             if (player != null)
             {
-                player.ApplySuperJump(jumpMultiplier, duration);
+                player.ApplySuperJump(mult, dur);
             }
 
             currentPickups++;
-            Debug.Log($"Power-Up recogido. Uso {currentPickups} de {maxPickups}.");
+            Debug.Log($"{itemName} recogido. Uso {currentPickups} de {maxUses}.");
 
-            if (currentPickups >= maxPickups)
+            if (currentPickups >= maxUses)
             {
-                Debug.Log("Power-Up agotado definitivamente.");
+                Debug.Log($"{itemName} agotado definitivamente.");
                 Destroy(gameObject);
             }
             else
             {
-                StartCoroutine(RespawnRoutine());
+                StartCoroutine(RespawnRoutine(dur));
             }
         }
     }
 
-    private IEnumerator RespawnRoutine()
+    private IEnumerator RespawnRoutine(float waitDuration)
     {
-
         isAvailable = false;
         if (itemRenderer != null) itemRenderer.enabled = false;
         if (itemCollider != null) itemCollider.enabled = false;
 
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(waitDuration);
 
-        // Vuelve a aparecer en el mapa
         if (itemRenderer != null) itemRenderer.enabled = true;
         if (itemCollider != null) itemCollider.enabled = true;
         isAvailable = true;
-        Debug.Log("El Power-Up ha reaparecido");
+        Debug.Log("El ítem ha reaparecido");
     }
 }
