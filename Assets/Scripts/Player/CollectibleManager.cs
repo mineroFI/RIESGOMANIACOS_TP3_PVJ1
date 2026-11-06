@@ -2,15 +2,25 @@ using UnityEngine;
 
 public class CollectibleManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static CollectibleManager Instance;
+
+    private int collectibleCount;
+
+    private void Awake()
     {
-        
+        Instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void AddCollectible()
     {
-        
+        collectibleCount++;
+
+        Debug.Log("Collectibles: " + collectibleCount);
     }
+
+    public int GetCollectibleCount()
+    {
+        return collectibleCount;
+    }
+
 }

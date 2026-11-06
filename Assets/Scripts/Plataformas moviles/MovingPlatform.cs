@@ -1,69 +1,85 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class MovingPlatform : MonoBehaviour
 {
-    [Header("Waypoints")]
-    [SerializeField] private Transform pointA;
-    [SerializeField] private Transform pointB;
+    public Transform pointA;
+    public Transform pointB;
 
-    [Header("Configuración de Movimiento")]
-    [SerializeField] private float speed = 3f;
-    [SerializeField] private float waitTime = 2f;
+    public float Speed = 3;
 
-    private Rigidbody rb;
-    private Transform currentTarget;
-    private bool isWaiting = false;
+    private Vector3 currentTarget;
+    private Vector3 direcction;
 
-    void Awake()
+    private float proximityThreshold = 0.2f;
+
+    private bool esperandoCambio = false;
+
+
+    private void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
+        pointA.parent = null;
+        pointB.parent = null;
+
+        currentTarget = pointB.position;
+
     }
 
-    void Start()
+    private void LateUpdate()
     {
-        if (pointB != null)
+        float distanceToTarget = Vector3.Distance(transform.position, currentTarget);
+
+        //if (distanceToTarget < proximityThreshold)
+        //{
+        //    currentTarget = currentTarget == pointA.position ? pointB.position : pointA.position;
+        //}
+
+        if (distanceToTarget < proximityThreshold && !esperandoCambio)
         {
-            currentTarget = pointB;
+            esperandoCambio = true;
+            Invoke("CambiarDireccion", 2f);
+            return;
+        }
+
+        direcction = (currentTarget - transform.position).normalized;
+
+        //transform.position += direcction * Speed * Time.deltaTime;
+
+        transform.position = Vector3.MoveTowards(transform.position, currentTarget, Speed * Time.deltaTime);
+    }
+
+    private void CambiarDireccion()
+    {
+        currentTarget = currentTarget == pointA.position
+            ? pointB.position
+            : pointA.position;
+
+        esperandoCambio = false;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerController player = other.GetComponent<playerController>();
+
+            if (player != null)
+            {
+                player.externalMoveSpeed = direcction * Speed;
+            }
         }
     }
 
-    void FixedUpdate()
+    private void OnTriggerExit(Collider other)
     {
-        if (isWaiting || pointA == null || pointB == null) return;
-
-        
-        Vector3 newPosition = Vector3.MoveTowards(rb.position, currentTarget.position, speed * Time.fixedDeltaTime);
-        rb.MovePosition(newPosition);
-
-        
-        if (Vector3.Distance(rb.position, currentTarget.position) < 0.05f)
+        if (other.CompareTag("Player"))
         {
-            isWaiting = true;
-            Invoke(nameof(SwitchTargetAndResume), waitTime);
+            playerController player = other.GetComponent<playerController>();
+
+            if (player != null)
+            {
+                player.externalMoveSpeed = Vector3.zero;
+            }
         }
     }
 
-    private void SwitchTargetAndResume()
-    {
-        currentTarget = (currentTarget == pointA) ? pointB : pointA;
-        isWaiting = false;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.transform.root.CompareTag("Player"))
-        {
-            collision.transform.root.SetParent(transform);
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.transform.root.CompareTag("Player"))
-        {
-            collision.transform.root.SetParent(null);
-        }
-    }
 }

@@ -2,15 +2,22 @@ using UnityEngine;
 
 public class LevelGoal : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    private bool levelCompleted;
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if (levelCompleted)
+        {
+            return;
+        }
+
+        Debug.Log("¡Algo entró en el punto final!: " + other.gameObject.name);
+
+        if (!other.CompareTag("Objeto"))
+        { return; }
+
+        levelCompleted = true;
+
+        Debug.Log("VICTORIA!");
     }
 }

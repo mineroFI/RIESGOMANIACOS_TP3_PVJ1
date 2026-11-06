@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class KillObstacle : MonoBehaviour
+public class killObtacle : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        playerController player = other.GetComponent<playerController>();
+
+        if (player != null)
+        {
+            player.Die();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -2,15 +2,22 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("Visual")]
+    public float rotationSpeed = 100f;
+
+    private void Update()
     {
-        
+        transform.Rotate(0f, rotationSpeed * Time.deltaTime, 0f);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+
+        if (other.CompareTag("Player"))
+        {
+            CollectibleManager.Instance.AddCollectible();
+
+            Destroy(gameObject);
+        }
     }
 }

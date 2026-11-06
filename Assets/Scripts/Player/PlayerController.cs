@@ -1,93 +1,158 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
-[RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviour
+public class playerController : MonoBehaviour
 {
-    [Header("Configuración de Movimiento")]
-    [SerializeField] private float moveSpeed = 6f;
-    [SerializeField] private float rotationSpeed = 12f;
+    public float Speed = 5f;
+    public float Gravity = -20f;
+    public float JumpHeight = 2f;
+    public float rotationSpeed = 10f;
+    public Transform spawnPoint;
 
-    [Header("Configuración de Salto")]
-    [SerializeField] private float jumpForce = 7f;
+    Transform cameraTransform;
 
-    private Rigidbody rb;
-    private Vector3 movementInput;
-    private bool isGrounded;
-    private float originalJumpForce;
-    private Quaternion targetRotation;
+    private CharacterController controller;
+    private Vector2 moveInput;
+    private float verticalVelocity;
+    private bool jumpPressed;
 
-    public float MoveSpeed
+    private bool isDead = false;
+    private bool gameOver = false;
+
+
+    public Vector3 externalMoveSpeed;
+
+
+
+    void Start()
     {
-        get => moveSpeed;
-        set => moveSpeed = value;
-    }
+        controller = GetComponent<CharacterController>();
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-        originalJumpForce = jumpForce;
-        targetRotation = transform.rotation;
+        cameraTransform = Camera.main.transform;
     }
 
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        movementInput = new Vector3(horizontal, 0f, vertical).normalized;
+        if (isDead || gameOver) return;
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+
+        bool isGrounded = controller.isGrounded;
+
+        if (isGrounded && verticalVelocity < 0)
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
-            isGrounded = false;
+            verticalVelocity = -2f;
         }
 
-        // Se calcula la rotación objetivo aquí, pero se aplica en FixedUpdate
-        if (movementInput.sqrMagnitude > 0.05f)
+        if (jumpPressed && isGrounded)
         {
-            targetRotation = Quaternion.LookRotation(movementInput, Vector3.up);
+            verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+            jumpPressed = false;
+        }
+
+        verticalVelocity += Gravity * Time.deltaTime;
+
+        // Direccion del movimiento
+        // Vector3 moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+
+        // MOVIMIENTO RELATIVO DE LA CAMARA
+        Vector3 forward = cameraTransform.forward;
+        Vector3 right = cameraTransform.right;
+
+        // EVITAR INCLINACION VERTICAL
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+
+        Vector3 moveDirection = forward * moveInput.y + right * moveInput.x;
+
+        // Invertimos moveInput (-moveInput.x y -moveInput.y) para corregir el modelo volteado
+        //Vector3 moveDirection = new Vector3(-moveInput.x, 0f, -moveInput.y);
+
+
+        // Rotacion del personaje
+        if (moveDirection.magnitude > 0.1f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+
+        // Movimiento original
+        Vector3 move = moveDirection.normalized;
+        //Vector3 move = -moveDirection.normalized;
+        move.y = verticalVelocity / Speed;
+
+        controller.Move(move * Speed * Time.deltaTime + externalMoveSpeed * Time.deltaTime);
+    }
+
+
+
+    public void OnMove(InputValue value)
+    {
+        moveInput = value.Get<Vector2>();
+    }
+
+    public void OnJump(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            jumpPressed = true;
         }
     }
 
-    void FixedUpdate()
+
+    public void SetGameOver()
     {
-        
-        if (movementInput.sqrMagnitude > 0.05f)
+        gameOver = true;
+
+        moveInput = Vector2.zero;
+        jumpPressed = false;
+        externalMoveSpeed = Vector3.zero;
+
+    }
+
+    public void SetSpawnPoint(Transform newSpawnPoint)
+    {
+        spawnPoint = newSpawnPoint;
+    }   
+
+    public void Die()
+    {
+        controller.enabled = false;
+        transform.position = spawnPoint.position;
+        verticalVelocity = 0f;
+        controller.enabled = true;
+
+        //Perder una vida
+        PlayerLives playerLives = GetComponent<PlayerLives>();
+
+        if (playerLives != null)
         {
-            Quaternion nextRotation = Quaternion.RotateTowards(rb.rotation, targetRotation, rotationSpeed * 100f * Time.fixedDeltaTime);
-            rb.MoveRotation(nextRotation);
+            playerLives.LoseLife();
+        }
+        else
+            Debug.Log("Falta el componente PlayerLives");
+
+        //ENEMIGO TERRESTRE
+        GroundEnemyAI[] enemiesGround = FindObjectsByType<GroundEnemyAI>(FindObjectsSortMode.None);
+
+        foreach (GroundEnemyAI enemy in enemiesGround)
+        {
+            enemy.ResetEnemy();
         }
 
-        Vector3 targetVelocity = movementInput * moveSpeed;
-        rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
-    }
+        FloatingEnemy[] enemies = FindObjectsByType<FloatingEnemy>(FindObjectsSortMode.None);
 
-    private void OnCollisionStay(Collision collision)
-    {
-        foreach (ContactPoint contact in collision.contacts)
+        foreach (FloatingEnemy enemy in enemies)
         {
-            if (contact.normal.y > 0.6f)
-            {
-                isGrounded = true;
-                return;
-            }
+            enemy.ResetEnemy();
         }
+
+        //StartCoroutine(RespawnCourotine());
     }
 
-    private void OnCollisionExit(Collision collision)
-    {
-        isGrounded = false;
-    }
-
-    public void ApplySuperJump(float multiplier, float duration)
-    {
-        StartCoroutine(SuperJumpRoutine(multiplier, duration));
-    }
-
-    private IEnumerator SuperJumpRoutine(float multiplier, float duration)
-    {
-        jumpForce = originalJumpForce * multiplier;
-        yield return new WaitForSeconds(duration);
-        jumpForce = originalJumpForce;
-    }
 }

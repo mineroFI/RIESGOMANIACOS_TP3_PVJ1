@@ -1,16 +1,12 @@
+using TMPro;
 using UnityEngine;
 
 public class CollectibleUI : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private TMP_Text collectibleText;
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateCounter(int amount)
     {
-        
+        collectibleText.text = "COINS: " + amount;
     }
 }
