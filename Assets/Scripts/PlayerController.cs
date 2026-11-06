@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Configuración de Movimiento")]
-    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] public float moveSpeed = 6f;
     [SerializeField] private float rotationSpeed = 12f;
 
     [Header("Configuración de Salto")]
