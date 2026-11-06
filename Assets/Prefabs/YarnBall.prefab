@@ -153,5 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fce6dcca1571e084585c89988ca703db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RollingYarn
+  obstacleData: {fileID: 11400000, guid: cb249e08b2615784db3d21fb04f35093, type: 2}
   lifetime: 8
   pushForce: 8
