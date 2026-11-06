@@ -23,6 +23,9 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private float currentJumpMultiplier = 1f;
     private Quaternion targetRotation;
+    //efrian: aqui coloco lo de la vida del jugador si necesitan hacer algomas pueden usar la referancia de vida para hacer que los enemigos 
+    //detecten la vida del jugador
+    public int vida = 3;
 
     public float MoveSpeed
     {
@@ -105,7 +108,12 @@ public class PlayerController : MonoBehaviour
     {
         if (((1 << collision.gameObject.layer) & capaSuelo) != 0)
         {
-            Respawn();
+            daño();
+            if (vida > 0)
+            {
+                Respawn();
+            }
+            
         }
     }
 
@@ -122,5 +130,18 @@ public class PlayerController : MonoBehaviour
     public void SetPosition(Transform newSpaunPosition)
     {
         spawnPoint = newSpaunPosition;
+    }
+    public void daño()
+    {
+        vida --;
+        if (vida <= 0)
+        {
+            Debug.Log("Game Over");
+            GameManager gameManager = FindObjectOfType<GameManager>();
+            if (gameManager != null)
+            {
+                gameManager.GameOver();
+            }
+        }
     }
 }
