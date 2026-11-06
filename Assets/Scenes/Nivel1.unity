@@ -9192,6 +9192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ff6afe0dd6f8164988c8b7cc8d88dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerStats: {fileID: 11400000, guid: 7c44302cb6d7308409ac1562aec9bf3d, type: 2}
   capaSuelo:
     serializedVersion: 2
     m_Bits: 8
@@ -10143,6 +10144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b186f07d0ae24644fa59069157ce5183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerUp
+  itemData: {fileID: 11400000, guid: 6c4f667868a95804487550944e1286ca, type: 2}
   jumpMultiplier: 1.2
   duration: 6
   rotationSpeed: 90
