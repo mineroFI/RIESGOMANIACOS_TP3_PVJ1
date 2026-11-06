@@ -4,14 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Datos Modulares")]
-    [SerializeField] private PlayerStatsSO playerStats;
-
-    [Header("Configuración de Respawn")]
-    [SerializeField] private LayerMask capaSuelo;
-    private Transform spawnPoint;
-
-    [Header("Configuración de Movimiento (Respaldo)")]
+    [Header("Configuración de Movimiento")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float rotationSpeed = 12f;
 
