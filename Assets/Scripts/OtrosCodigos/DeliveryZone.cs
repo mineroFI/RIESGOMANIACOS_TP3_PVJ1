@@ -9,6 +9,8 @@ public class DeliveryZone : MonoBehaviour
 
     [Header("Referencia al Objeto")]
     [SerializeField] private string targetTag = "Coin";
+    [Header("Referencia al GameManager")]
+    [SerializeField] private GameManager gameManager;
 
     private bool isDelivered = false;
 
@@ -45,5 +47,10 @@ public class DeliveryZone : MonoBehaviour
         {
             victoryParticles.Play();
         }
+        if (gameManager != null)
+        {
+            gameManager.Victoria();
+        }
+        if (rb != null) rb.isKinematic = true;
     }
 }
