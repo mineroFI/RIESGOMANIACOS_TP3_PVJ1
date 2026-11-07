@@ -47,11 +47,17 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        Time.timeScale = 0f;
         if(panelGameOver != null)
         {
             Debug.Log("GAME OVER");
             panelGameOver.SetActive(true);
         }
+        if (panelHUD != null)
+        {
+            panelHUD.SetActive(false);
+        }
+        Debug.Log("estado:GAME OVER");
     }
     public void PauseGame()
     {
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviour
             panelPause.SetActive(true);
             Time.timeScale = 0f;
         }
+        Debug.Log("estado:PAUSA");
     }
     public void ReanudarJuego()
     {
@@ -73,6 +80,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("REANUDAR JUEGO");
             panelPause.SetActive(false);
         }
+        Debug.Log("estado:REANUDAR JUEGO");
     }
     public void TogglePanel(GameObject panel)
     {
@@ -99,6 +107,7 @@ public class GameManager : MonoBehaviour
         {
             panelHUD.SetActive(false);
         }
+        Debug.Log("estado:VICTORIA");
     }
     public enum GameState
     {

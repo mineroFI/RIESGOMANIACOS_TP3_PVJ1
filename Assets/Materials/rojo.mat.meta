@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/CheckPoint/1/textures/cat.mat.meta
+guid: 4aa442a7c6284fe4880d272e47b96cd5
+========
 guid: 382d6b5e95468ac498303363c4571219
+>>>>>>>> origin/main:Assets/Materials/rojo.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000
