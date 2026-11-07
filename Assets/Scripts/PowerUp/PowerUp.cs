@@ -39,7 +39,7 @@ public class PowerUp : MonoBehaviour
         if (!isAvailable) return;
 
         string targetTag = itemData != null ? itemData.targetTag : "Player";
-        PlayerController player = other.GetComponentInParent<PlayerController>();
+        playerController player = other.GetComponentInParent<playerController>();
 
         if (player != null || other.CompareTag(targetTag))
         {

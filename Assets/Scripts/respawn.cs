@@ -9,10 +9,10 @@ public class respawn : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController player = other.GetComponent<PlayerController>();
+        playerController player = other.GetComponent<playerController>();
         if (player != null)
         {
-            player.SetPosition(transform);
+            player.SetSpawnPoint(transform);
             if (checkPointRenderer != null)
             {
                 checkPointRenderer.material.color = Color.green;
