@@ -2,11 +2,12 @@
 Dessarollo team RiesgoManiacos
 
 Integrantes:
-Izetta Nicolas
-Quiroga Aldana
-Reskovsky David Adrian
-Ana Navarro
-Efrain Gutierrez
+Izetta Nicolas,
+Quiroga Aldana,
+Reskovsky David Adrian,
+Ana Navarro,
+Efrain Gutierrez,
+Aitana Sancho Torino
 
 Descripcion del Juego
 La idea para CatSpace es convertir el prototipo que ya tenemos en una aventura espacial donde controlamos a Glorp, un gato alienigena (o astronauta alienigena) en una misión de exploración. En lugar de un recorrido aislado, el juego se plantea como una travesía en dos etapas conectadas:
